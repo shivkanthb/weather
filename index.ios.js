@@ -8,9 +8,27 @@ import {
 	StatusBar
 } from 'react-native';
 
-import Icon from 'react-native-vector-icons/Ionicons'
+import Icon from 'react-native-vector-icons/Ionicons';
+
+import {fetchWeather} from './weather.js';
 
 class fuckingweather extends Component {
+
+	componentDidMount() {
+		this.getLocation();
+		fetchWeather(10,20);
+	}
+
+	testFunc() {
+		alert("TEST");
+	}
+	getLocation() {
+		navigator.geolocation.getCurrentPosition(
+			(posData) => console.log(posData),
+			(error) => alert(error),
+			{timeout: 10000}
+		)
+	}
 	render() {
 		return (
 			<View style={styles.container}>
@@ -21,7 +39,7 @@ class fuckingweather extends Component {
 				 </View>
 				 <View style={styles.body}>
 				 	<Text style={styles.title}>
-				 		<Text style={{color:'red'}}>Fucking</Text> Weather App</Text>
+				 		<Text style={{color:'red'}}>Fucking</Text> Weather App.</Text>
 				 	<Text style={styles.subtitle}>Make it rain</Text>
 				 </View>
 			</View>
