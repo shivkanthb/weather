@@ -10,8 +10,10 @@ import {
 
 import Icon from 'react-native-vector-icons/Ionicons';
 import {fetchWeather} from './weather.js';
+import Highlighter from 'react-native-highlight-words';
 
 const iconNames = {
+	'Default': 'ios-time',
 	'clear-day': 'ios-sunny',
 	'clear-night': 'ios-moon',
 	'rain': 'ios-rainy',
@@ -24,12 +26,75 @@ const iconNames = {
 	'partly-cloudy-night':'ios-cloudy-night'  
 }
 
+const phrases = {
+	'clear-day': {
+		title: "Its fucking clear outside",
+		subtitle: "GTF outside",
+		highlight: "fucking",
+		bg: "#FFD017"
+	},
+	'clear-night': {
+		title: "Its fucking clear outside",
+		subtitle: "Checkout the moon",
+		highlight: "fucking",
+		bg: "#22313F"
+	},
+	'rain': {
+		title: "Raining like shit",
+		subtitle: "Am I in Seattle or what",
+		highlight: "like",
+		bg: "#F9690E"
+	},
+	'snow': {
+		title: "Jon Snow is outside",
+		subtitle: "Make a snowman you lazy fuck",
+		highlight: "Snow",
+		bg: "#ECECEC"
+	},
+	'sleet': {
+		title: "Hard Ice snow aka SLEET",
+		subtitle: "Eat, code, sleet",
+		highlight: "Ice",
+		bg: "#ECF0F1"
+	},
+	'wind': {
+		title: "Its Windy AF",
+		subtitle: "Dont get blown away",
+		highlight: "Windy",
+		bg: "#87D37C"
+	},
+	'fog': {
+		title: "What the Fog dude!",
+		subtitle: "Use thy foglights while driving",
+		highlight: "Fog",
+		bg: "#1F3A93"
+	},
+	'cloudy': {
+		title: "Cloudy as SHIT",
+		subtitle: "keep your shades at home",
+		highlight: "Cloudy",
+		bg: "#1E8BC3"
+	},
+	'partly-cloudy-day': {
+		title: "The sun and clouds are playing",
+		subtitle: "Dont give a shit",
+		highlight: "clouds",
+		bg: "#1E8BC3"
+	},
+	'partly-cloudy-night': {
+		title: "Meh. ",
+		subtitle: "Does it really matter?",
+		highlight: "Meh",
+		bg: "#22313F"
+	} 
+}
+
 class fuckingweather extends Component {
 
 	componentWillMount() {
 		this.state = {
 			temp: 0,
-			weather: 'clear-day'
+			weather: 'Default'
 		}
 	}
 
@@ -39,7 +104,7 @@ class fuckingweather extends Component {
 				.then(res =>  {
 					console.log(res);
 					this.setState({
-					temp: res.temp,
+					temp: Math.round(res.temp),
 					weather: res.weather
 					})
 				})
@@ -69,17 +134,30 @@ class fuckingweather extends Component {
 		// )
 	}
 	render() {
+
+		// Landing page
+		if (this.state.weather=="Default") {
+		    return (
+		    	<View style={styles.loadingPage}>
+		    		<Icon name={iconNames[this.state.weather]} size={40} color={'white'} />
+		    	</View>
+		    );
+		}
 		return (
-			<View style={styles.container}>
+			<View style={[styles.container, {backgroundColor: phrases[this.state.weather].bg}]}>
 				<StatusBar hidden={true} />
 				 <View style={styles.header}>
-				 	<Icon name={iconNames[this.state.weather]} size={65} color={'white'} />
-				 	<Text style={styles.temp}>{this.state.temp}</Text>
+				 	<Icon name={iconNames[this.state.weather]} size={40} color={'white'} />
+				 	<Text style={styles.temp}>{this.state.temp}° F</Text>
 				 </View>
 				 <View style={styles.body}>
-				 	<Text style={styles.title}>
-				 		<Text style={{color:'red'}}>Fucking</Text> Weather App.</Text>
-				 	<Text style={styles.subtitle}>Make it rain</Text>
+					 <Highlighter
+					  style={styles.title}
+					  highlightStyle={{color: 'red'}}
+					  searchWords={[phrases[this.state.weather].highlight]}
+					  textToHighlight={phrases[this.state.weather].title}
+					  />
+				 	<Text style={styles.subtitle}>{phrases[this.state.weather].subtitle}</Text>
 				 </View>
 			</View>
 		);
@@ -93,6 +171,12 @@ alignItems is for X axis.
 */
 
 const styles = StyleSheet.create({
+	loadingPage: {
+	 	flex:1,
+	 	alignItems: 'center',
+		justifyContent: 'center',
+		backgroundColor: 'black'
+	},
 	container: {
 		flex: 1,
 		backgroundColor: '#FFD017'
@@ -102,11 +186,10 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		justifyContent: 'space-around',
 		flex:1,
-		// backgroundColor: 'blue',
 	},
 	temp: {
 		fontFamily: 'HelveticaNeue-Bold',
-		fontSize: 45,
+		fontSize: 32,
 		color: 'white'
 	},
 	body: {
