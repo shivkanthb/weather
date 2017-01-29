@@ -9,33 +9,72 @@ import {
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons';
-
 import {fetchWeather} from './weather.js';
+
+const iconNames = {
+	'clear-day': 'ios-sunny',
+	'clear-night': 'ios-moon',
+	'rain': 'ios-rainy',
+	'snow': 'ios-snow' ,
+	'sleet': 'ios-snow',
+	'wind': 'ios-aperture',
+	'fog': 'ios-cloudy',
+	'cloudy': 'ios-cloudy' ,
+	'partly-cloudy-day': 'ios-partly-sunny' ,
+	'partly-cloudy-night':'ios-cloudy-night'  
+}
 
 class fuckingweather extends Component {
 
+	componentWillMount() {
+		this.state = {
+			temp: 0,
+			weather: 'clear-day'
+		}
+	}
+
 	componentDidMount() {
-		this.getLocation();
-		fetchWeather(10,20);
+		this.getLocation((posData) => {
+			fetchWeather(posData.coords.latitude, posData.coords.longitude)
+				.then(res =>  {
+					console.log(res);
+					this.setState({
+					temp: res.temp,
+					weather: res.weather
+					})
+				})
+		})
+		// fetchWeather(50,70)
+		// 	.then(res => console.log(res))
 	}
 
 	testFunc() {
 		alert("TEST");
 	}
-	getLocation() {
+
+	getLocation(callback) {
 		navigator.geolocation.getCurrentPosition(
-			(posData) => console.log(posData),
+			(posData) => callback(posData),
 			(error) => alert(error),
 			{timeout: 10000}
 		)
+		// navigator.geolocation.getCurrentPosition(
+		// 	(posData) => fetchWeather(posData.coords.latitude, posData.coords.longitude)
+		// 		.then(res => this.setState({
+		// 			temp: res.temp,
+		// 			weather: res.weather
+		// 		})),
+		// 	(error) => alert(error),
+		// 	{timeout: 10000}
+		// )
 	}
 	render() {
 		return (
 			<View style={styles.container}>
 				<StatusBar hidden={true} />
 				 <View style={styles.header}>
-				 	<Icon name={'ios-sunny'} size={75} color={'white'} />
-				 	<Text style={styles.temp}>24</Text>
+				 	<Icon name={iconNames[this.state.weather]} size={65} color={'white'} />
+				 	<Text style={styles.temp}>{this.state.temp}</Text>
 				 </View>
 				 <View style={styles.body}>
 				 	<Text style={styles.title}>

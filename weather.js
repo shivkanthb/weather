@@ -6,10 +6,10 @@ export const fetchWeather = (lat, lng) => {
 
 	//fetch takes an url and returns a promise.
 	// Also add 'NSArbitraryLoads' key and value as 'true' under NSAppTransportSecuriy in the plist file
-	fetch(url)
+	return fetch(url)
 		.then(res => res.json())
-			.then(json => console.log({
+			.then(json => ({
 				temp: json.currently.temperature,
-				weather: json.currently.summary
+				weather: json.currently.icon
 			}))
 }
